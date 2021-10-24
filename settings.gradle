@@ -1,0 +1,4 @@
+rootProject.name = 'balsamiq-recon'
+include 'core'
+include 'web'
+

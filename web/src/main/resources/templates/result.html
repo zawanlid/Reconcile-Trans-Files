@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+
+<div th:fragment="reconciliation-fragment" th:id="reconciliation-result" >
+
+    <span th:if="${model != null}" th:inline="text" th:with="reconciliation_result=${model['reconciliation_result']}">
+        <div class="flexbox">
+            <div class="left">
+                <table class="summary-table" id="summary-table-left">
+                    <tr>
+                        <td><th:block th:inline="text" th:text="#{home.form.result.total_records}"/></td>
+                        <td><th:block th:inline="text" th:text="${reconciliation_result.totalRecordsFile1}"/></td>
+                    </tr>
+                    <tr>
+                        <td><th:block th:inline="text" th:text="#{home.form.result.matching_records}"/></td>
+                        <td><th:block th:inline="text" th:text="${reconciliation_result.matchingRecords}"/></td>
+                    </tr>
+                    <tr>
+                        <td><th:block th:inline="text" th:text="#{home.form.result.unmatched_records}"/></td>
+                        <td><th:block th:inline="text" th:text="${reconciliation_result.unmatchedRecordsFile1}"/></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="right">
+                <table class="summary-table" id="summary-table-right">
+                    <tr>
+                        <td><th:block th:inline="text" th:text="#{home.form.result.total_records}"/></td>
+                        <td><th:block th:inline="text" th:text="${reconciliation_result.totalRecordsFile2}"/></td>
+                    </tr>
+                    <tr>
+                        <td><th:block th:inline="text" th:text="#{home.form.result.matching_records}"/></td>
+                        <td><th:block th:inline="text" th:text="${reconciliation_result.matchingRecords}"/></td>
+                    </tr>
+                    <tr>
+                        <td><th:block th:inline="text" th:text="#{home.form.result.unmatched_records}"/></td>
+                        <td><th:block th:inline="text" th:text="${reconciliation_result.unmatchedRecordsFile2}"/></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <span th:if="${not #lists.isEmpty(reconciliation_result.recordPairs) or not #lists.isEmpty(reconciliation_result.unmatchedListFile1) or not #lists.isEmpty(reconciliation_result.unmatchedListFile2) }" th:inline="text">
+
+
+            <div class="content">
+                <button th:id="report-button" class="button styl-material" th:inline="text">
+                    <span>[[#{result.button.submit}]]</span>
+                    <svg class="ripple-obj" id="compare-button-svg">
+                        <use height="10%" width="10%" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#ripply-scott" class="js-ripple"></use>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="report" style="display: none; opacity: 0" th:if="${not #lists.isEmpty(reconciliation_result.recordPairs) }" th:with="record_pairs=${reconciliation_result.recordPairs},columns=${record_pairs[0].record1.header}">
+                <div class="header" th:class="section-header">
+                    <p th:utext="#{possible.report.header}">|Possible Match Report|</p>
+                </div>
+
+                <div class="flexbox">
+                    <div class="left-overflow">
+                        <table class="report-table" id="report-table-left">
+                            <tr>
+                                <th th:utext="#{report.table.header.row}">|Row|</th>
+                                <div th:each="header : ${columns}" form-group="true" >
+                                    <th th:inline="text" th:text="${header.key}" />
+                                </div>
+                            </tr>
+                            <div th:each="record_pair : ${record_pairs}" form-group="true" >
+                                <tr>
+                                    <div th:if="${not #lists.isEmpty(record_pair.record1.values)}">
+                                        <td align="center" th:inline="text" th:text="${record_pair.record1.row}"/>
+                                        <div th:each="value : ${record_pair.record1.values}" form-group="true" >
+                                            <td align="center" th:inline="text" th:text="${value}"/>
+                                        </div>
+                                    </div>
+                                    <!-- ELSE -->
+                                    <div th:unless="${not #lists.isEmpty(record_pair.record1.values)}">
+                                        <td th:inline="text" th:text="${'&nbsp;'}" /> <!-- row column -->
+                                        <div th:each="header : ${columns}" form-group="true" >
+                                            <td th:inline="text" th:text="${'&nbsp;'}" />
+                                        </div>
+                                    </div>
+                                </tr>
+                            </div>
+                        </table>
+                    </div>
+                    <div class="right-overflow">
+                        <table class="report-table" id="report-table-right">
+                            <tr>
+                                <th th:utext="#{report.table.header.row}">|Row|</th>
+                                <div th:each="header : ${columns}" form-group="true" >
+                                    <th th:inline="text" th:text="${header.key}" />
+                                </div>
+                            </tr>
+                            <div th:each="record_pair : ${record_pairs}" form-group="true" >
+                                <tr>
+                                    <div th:if="${not #lists.isEmpty(record_pair.record2.values)}">
+                                        <td align="center" th:inline="text" th:text="${record_pair.record2.row}"/>
+                                        <div th:each="value : ${record_pair.record2.values}" form-group="true" >
+                                            <td align="center" th:inline="text" th:text="${value}"/>
+                                        </div>
+                                    </div>
+                                    <!-- ELSE -->
+                                    <div th:unless="${not #lists.isEmpty(record_pair.record2.values)}">
+                                        <td th:inline="text" th:text="${'&nbsp;'}" /> <!-- row column -->
+                                        <div th:each="header : ${columns}" form-group="true" >
+                                            <td th:inline="text" th:text="${'&nbsp;'}" />
+                                        </div>
+                                    </div>
+                                </tr>
+                            </div>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+                <div id="report2" style="display: none; opacity: 0" th:inline="text" th:if="${not #lists.isEmpty(reconciliation_result.unmatchedListFile1) or not #lists.isEmpty(reconciliation_result.unmatchedListFile2) }" >
+                <div class="header" th:class="section-header">
+                    <p th:utext="#{unmatched.report.header}">|Unmatched Report|</p>
+                </div>
+                <div class="flexbox">
+                    <div class="left-overflow" th:if="${ #lists.isEmpty(reconciliation_result.unmatchedListFile1) }">
+                        <table class="report-table" id="norecord-table-left">
+                            <tr><td>No Unmatched Record</td></tr>
+                        </table>
+                    </div>
+                        <div class="left-overflow" th:if="${not #lists.isEmpty(reconciliation_result.unmatchedListFile1) }" th:with="records=${reconciliation_result.unmatchedListFile1},columns=${records[0].header}">
+                            <table class="report-table" id="report2-table-left">
+                                <tr>
+                                    <th th:utext="#{report.table.header.row}">|Row|</th>
+                                    <div th:each="header : ${columns}" form-group="true" >
+                                        <th th:inline="text" th:text="${header.key}" />
+                                    </div>
+                                </tr>
+                                <div th:each="record : ${records}" form-group="true" >
+                                    <tr>
+                                        <div th:if="${not #lists.isEmpty(record.values)}">
+                                            <td align="center" th:inline="text" th:text="${record.row}"/>
+                                            <div th:each="value : ${record.values}" form-group="true" >
+                                                <td align="center" th:inline="text" th:text="${value}"/>
+                                            </div>
+                                        </div>
+                                        <!-- ELSE -->
+                                        <div th:unless="${not #lists.isEmpty(record.values)}">
+                                            <td th:inline="text" th:text="${'&nbsp;'}" /> <!-- row column -->
+                                            <div th:each="header : ${columns}" form-group="true" >
+                                                <td th:inline="text" th:text="${'&nbsp;'}" />
+                                            </div>
+                                        </div>
+                                    </tr>
+                                </div>
+                            </table>
+                        </div>
+                    <div class="right-overflow" th:if="${ #lists.isEmpty(reconciliation_result.unmatchedListFile2) }">
+                        <table class="report-table" id="norecord-table-right">
+                            <tr><td>No Unmatched Record</td></tr>
+                        </table>
+                    </div>
+                        <div class="right-overflow" th:if="${not #lists.isEmpty(reconciliation_result.unmatchedListFile2) }" th:inline="text" th:with="records=${reconciliation_result.unmatchedListFile2},columns=${records[0].header}">
+                            <table class="report-table" id="report2-table-right">
+                                <tr>
+                                    <th th:utext="#{report.table.header.row}">|Row|</th>
+                                    <div th:each="header : ${columns}" form-group="true" >
+                                        <th th:inline="text" th:text="${header.key}" />
+                                    </div>
+                                </tr>
+                                <div th:each="record : ${records}" form-group="true" >
+                                    <tr>
+                                        <div th:if="${not #lists.isEmpty(record.values)}">
+                                            <td align="center" th:inline="text" th:text="${record.row}"/>
+                                            <div th:each="value : ${record.values}" form-group="true" >
+                                                <td align="center" th:inline="text" th:text="${value}"/>
+                                            </div>
+                                        </div>
+                                        <!-- ELSE -->
+                                        <div th:unless="${not #lists.isEmpty(record.values)}">
+                                            <td th:inline="text" th:text="${'&nbsp;'}" /> <!-- row column -->
+                                            <div th:each="header : ${columns}" form-group="true" >
+                                                <td th:inline="text" th:text="${'&nbsp;'}" />
+                                            </div>
+                                        </div>
+                                    </tr>
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        </span>
+
+    </span>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        $("#report-button").click(function () {
+
+            if(document.getElementById("report") != null) {
+                document.getElementById("report").style.display = 'block';
+                $("#report").animate({duration:200, opacity: 1}, 400);
+            }
+            if (document.getElementById("report2") != null) {
+                document.getElementById("report2").style.display = 'block';
+                $("#report2").animate({duration:200, opacity: 1}, 400);
+            }
+
+            $(this).blur();
+
+        });
+        /*]]>*/
+    </script>
+
+</div>
+</body>
+</html>
